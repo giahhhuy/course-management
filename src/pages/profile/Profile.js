@@ -34,7 +34,9 @@ import {
   Assignment as AssignmentIcon,
   Star as StarIcon,
   Lock as LockIcon,
+  PhotoCamera,
 } from '@mui/icons-material';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Component TabPanel
 function TabPanel(props) {
@@ -58,18 +60,20 @@ function TabPanel(props) {
 }
 
 const Profile = () => {
+  const { currentUser, updateUserProfile } = useAuth();
   const [tabValue, setTabValue] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+84 123 456 789',
-    location: 'TP. Hồ Chí Minh, Việt Nam',
-    bio: 'Học viên đam mê công nghệ và lập trình. Luôn tìm kiếm cơ hội học hỏi và phát triển bản thân.',
-    avatar: 'https://mui.com/static/images/avatar/1.jpg',
+    name: currentUser?.displayName || '',
+    email: currentUser?.email || '',
+    phone: '',
+    location: '',
+    bio: '',
+    avatar: currentUser?.photoURL || 'https://mui.com/static/images/avatar/1.jpg',
   });
-
   const [formData, setFormData] = useState({ ...userData });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -80,9 +84,23 @@ const Profile = () => {
     setFormData({ ...userData });
   };
 
-  const handleSave = () => {
-    setUserData({ ...formData });
-    setIsEditing(false);
+  const handleSave = async () => {
+    setLoading(true);
+    setMessage('');
+
+    try {
+      await updateUserProfile({
+        displayName: formData.name,
+        photoURL: formData.avatar,
+      });
+      setUserData({ ...formData });
+      setIsEditing(false);
+      setMessage('Cập nhật thông tin thành công!');
+    } catch (error) {
+      setMessage('Cập nhật thông tin thất bại: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -120,10 +138,31 @@ const Profile = () => {
         <Paper sx={{ p: 3, mb: 3 }}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
-              <Avatar
-                src={userData.avatar}
-                sx={{ width: 150, height: 150, mx: 'auto', mb: 2 }}
-              />
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                <Avatar
+                  src={userData.avatar}
+                  alt={userData.name}
+                  sx={{ width: 150, height: 150, mb: 2 }}
+                />
+                <Button
+                  component="label"
+                  variant="outlined"
+                  startIcon={<PhotoCamera />}
+                  sx={{ position: 'absolute', bottom: 0, right: 0 }}
+                >
+                  Thay đổi ảnh
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => {
+                      // Handle file upload here
+                      // For now, just set a placeholder URL
+                      setUserData({ ...userData, avatar: 'https://via.placeholder.com/150' });
+                    }}
+                  />
+                </Button>
+              </Box>
               <Typography variant="h5" gutterBottom>
                 {userData.name}
               </Typography>

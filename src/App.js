@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider, createTheme } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
 
 // Layout components
 import Navbar from './components/layout/Navbar';
@@ -289,72 +290,74 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <Router>
-          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Navbar />
-            <main style={{ flex: 1, padding: '20px 0' }}>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/courses" element={<CourseList />} />
-                <Route path="/courses/:id" element={<CourseDetail />} />
-                
-                {/* Auth Routes */}
-                <Route path="/login" element={
-                  <PublicRoute>
-                    <Login />
-                  </PublicRoute>
-                } />
-                <Route path="/register" element={
-                  <PublicRoute>
-                    <Register />
-                  </PublicRoute>
-                } />
-                <Route path="/forgot-password" element={
-                  <PublicRoute>
-                    <ForgotPassword />
-                  </PublicRoute>
-                } />
+        <CartProvider>
+          <Router>
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <Navbar />
+              <main style={{ flex: 1, padding: '20px 0' }}>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/courses" element={<CourseList />} />
+                  <Route path="/courses/:id" element={<CourseDetail />} />
+                  
+                  {/* Auth Routes */}
+                  <Route path="/login" element={
+                    <PublicRoute>
+                      <Login />
+                    </PublicRoute>
+                  } />
+                  <Route path="/register" element={
+                    <PublicRoute>
+                      <Register />
+                    </PublicRoute>
+                  } />
+                  <Route path="/forgot-password" element={
+                    <PublicRoute>
+                      <ForgotPassword />
+                    </PublicRoute>
+                  } />
 
-                {/* Protected Routes */}
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/courses/:id/learn" element={
-                  <ProtectedRoute>
-                    <CourseLearning />
-                  </ProtectedRoute>
-                } />
-                <Route path="/courses/:id/learn/:lessonId" element={
-                  <ProtectedRoute>
-                    <CourseLearning />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/courses" element={
-                  <ProtectedRoute>
-                    <CourseManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } />
-                <Route path="/cart" element={
-                  <ProtectedRoute>
-                    <Cart />
-                  </ProtectedRoute>
-                } />
+                  {/* Protected Routes */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/courses/:id/learn" element={
+                    <ProtectedRoute>
+                      <CourseLearning />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/courses/:id/learn/:lessonId" element={
+                    <ProtectedRoute>
+                      <CourseLearning />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/courses" element={
+                    <ProtectedRoute>
+                      <CourseManagement />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/cart" element={
+                    <ProtectedRoute>
+                      <Cart />
+                    </ProtectedRoute>
+                  } />
 
-                {/* 404 Route */}
-                <Route path="*" element={<Navigate to="/" />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </Router>
+                  {/* 404 Route */}
+                  <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </Router>
+        </CartProvider>
       </AuthProvider>
     </ThemeProvider>
   );
